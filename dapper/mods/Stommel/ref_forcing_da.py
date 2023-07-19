@@ -79,8 +79,7 @@ if __name__=='__main__':
     model.ens_member=0
     stommel.plot_eq(ax, HMM.tseq, model, stommel.prob_change(Efor) * 100.)
     
-    #Save figure 
-    fig_dir='/home/ivo/dpr_data/stommel'
+    #Save figure
     fig.savefig(os.path.join(stommel.fig_dir, 'forcing_noise_da.png'),
                 format='png', dpi=500)
     
