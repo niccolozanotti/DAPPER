@@ -64,7 +64,7 @@ def exp_clima_forcing_da(N=10, seed=1000):
     B.salt_diff += (0.3*model.init_state.salt_diff)**2
     B.gamma += (0.3*model.init_state.gamma)**2
     X0 = modelling.GaussRV(C=B.to_vector(), mu=x0)
-    # Dynamisch model. All model error is assumed to be in forcing.
+    # Dynamics model. All model error is assumed to be in forcing.
     Dyn = {'M': model.M,
            'model': model.step,
            'noise': 0

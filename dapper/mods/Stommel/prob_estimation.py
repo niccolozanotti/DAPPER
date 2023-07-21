@@ -2,11 +2,8 @@
 
 """ Test run with Stommel model. """
 import numpy as np
-import dapper.mods as modelling
 import dapper.mods.Stommel as stommel
-from dapper.da_methods.ensemble import EnKF
 import matplotlib.pyplot as plt
-from copy import copy 
 import os
 
 from dapper.mods.Stommel.ref_forcing    import exp_ref_forcing
@@ -15,7 +12,6 @@ from dapper.mods.Stommel.clima_forcing import exp_clima_forcing
 from dapper.mods.Stommel.clima_forcing_da import exp_clima_forcing_da
 
 def sample_stat(samples):
-    from scipy.stats import t
     mu = np.mean(samples)
     std = np.std(samples)
     N = len(samples)

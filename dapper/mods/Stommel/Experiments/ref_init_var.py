@@ -34,10 +34,10 @@ Obs = model.obs_ocean()
 
 xp = EnKF("Sqrt",N)
 #Arrays for values of the variance to graph
-T_min, T_max, T_step = 0.4, 0.6, 0.1
-S_min, S_max, S_step = 0.04, 0.06, 0.01
-T_var = np.arange(T_min, T_max, T_step)
-S_var = np.arange(S_min, S_max, S_step)
+T_min, T_max, T_step = 0.7, 1., 0.1
+S_min, S_max, S_step = 0.07, 0.10, 0.01
+T_var = np.arange(T_min, T_max + T_step, T_step)
+S_var = np.arange(S_min, S_max + S_step, S_step)
 grid_x,  grid_y = np.meshgrid(T_var,S_var)
 #For the graph we want an array with coordinates (x,y,z) = (Ocean Temp Variance, ocean salinity variance,
 #percentage of Ensemble that flips)
@@ -60,7 +60,7 @@ for i in range(len(T_var)):
         #Apply DA()
         Efor, Eana = xp.assimilate(HMM, xx, yy)
         #Add points to the array to graph:
-        Z[i][j] = stommel.prob_change(Efor) #o [j][i], devo ragionarci
+        Z[i,j] = stommel.prob_change(Efor) #o [j][i], devo ragionarci
 
 
 #We now want to graph points in a 3D graph
