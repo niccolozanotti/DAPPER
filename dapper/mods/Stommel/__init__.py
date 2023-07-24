@@ -11,7 +11,7 @@ import dataclasses
 from abc import ABC, abstractmethod
 
 #Directory to store figures. 
-fig_dir = "/home/ivo/dpr_data/stommel"
+fig_dir = "figs"
 
 mm2m = 1e-3 #convert millimeter to meter
 year = 86400 * 365 #convert year to seconds

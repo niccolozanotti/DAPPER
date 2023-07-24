@@ -70,6 +70,6 @@ axs.legend((T,S),
 axs.text(6,0.8,
          '$\eta_2 = 0.5$',
          fontsize = 12,
-         bbox = dict(boxstyle="round,pad=0.6",facecolor = 'white', alpha = 0.5,edgecolor='None'))
+         bbox = dict(boxstyle="round,pad=0.6",facecolor = 'white', alpha = 0.5,edgecolor='black'))
 plt.savefig('../figs/trajectory1.pdf')
 ###
