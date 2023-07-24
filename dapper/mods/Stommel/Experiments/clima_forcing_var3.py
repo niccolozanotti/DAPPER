@@ -18,7 +18,7 @@ import scienceplots
 rc('text', usetex=False)
 plt.style.use(['science','no-latex']) # style used in scientific papers(LaTeX based)
 
-def exp_clima_forcing(N=100, seed=1000, T_p_f = 6.0, T_e_f= 3.0, DA = True, Melt = True):
+def exp_clima_forcing(N=100, seed=1000, T_p_f = 6.0, T_e_f= 3.0, DA = True, m_rate = 0.):
     # Time period for DA
 
     Tda = 20 * stommel.year
@@ -56,16 +56,16 @@ def exp_clima_forcing(N=100, seed=1000, T_p_f = 6.0, T_e_f= 3.0, DA = True, Melt
                  for func in noised]
     # Activate surface salinity flux.
     model.fluxes.append(stommel.SaltAirFlux(functions))
-    if Melt == True:
-        # Melt flux
-        melt_rate = -stommel.V_ice * np.array([1.0 / (model.dx[0, 0] * model.dy[0, 0]), 0.0]) / T_warming  # ms-1
-        # Default evaporation-percipitation flux (=0)
-        functions = stommel.default_air_ep(N)
+    # Melt flux
+    #melt_rate = -stommel.V_ice * np.array([1.0 / (model.dx[0, 0] * model.dy[0, 0]), 0.0]) / T_melt  # ms-1
+    melt_rate = -np.array([m_rate, 0.0]) / stommel.year #m_rate is in m/year and transformed in ms^-1
+    # Default evaporation-percipitation flux (=0)
+    functions = stommel.default_air_ep(N)
         # Add effect Greenland melt with annual rate melt_rate
-        functions = [stommel.merge_functions(T_warming, lambda t: func(t) + melt_rate, func)
+    functions = [stommel.merge_functions(T_warming, lambda t: func(t) + melt_rate, func)
                      for func in functions]
-        # Activate EP flux.
-        model.fluxes.append(stommel.EPFlux(functions))
+    # Activate EP flux.
+    model.fluxes.append(stommel.EPFlux(functions))
     # Default initial conditions
     x0 = model.x0
     # Variance in initial conditions and parameters.
@@ -90,50 +90,49 @@ def exp_clima_forcing(N=100, seed=1000, T_p_f = 6.0, T_e_f= 3.0, DA = True, Melt
 
     return xp, HMM, model
 
-DA = False
-Melt = False
-T_p_f = np.arange(4., 9., 1.)
-T_e_f = np.arange(2., 4.5, .5)
-grid_x, grid_y = np.meshgrid(T_p_f, T_e_f)
-Z = np.zeros_like(grid_x)
+def point(p_limit = 0.4, w_p = 6.0, m_r0 = 0., m_r_f = 2.,  step = .4, precision = 2, DA = True):
+    for m_r in np.arange(m_r0, m_r_f + step, step):
+        if precision <= 0:
+            return m_r_f
 
-for i in range(len(T_p_f)):
-    for j in range(len(T_e_f)):
-        xp, HMM, model = exp_clima_forcing(T_p_f= T_p_f[i], T_e_f= T_e_f[j], DA=DA, Melt=Melt)
+        xp, HMM, model = exp_clima_forcing(T_p_f = w_p, T_e_f = w_p/2, DA = DA, m_rate=m_r)
 
-        # Run
+        #Run
         xx, yy = HMM.simulate()
         Efor, Eana = xp.assimilate(HMM, xx, yy)
+        p_flip = stommel.prob_change(Efor)
 
-        Z[j,i] = stommel.prob_change(Efor)
+        if p_flip >= p_limit:
+            if np.abs(m_r - m_r0) < step/10: #if m_r == m_r0
+                return  m_r0
+            else:
+                print('fatto')
+                return point(p_limit=p_limit, w_p=w_p, m_r0= m_r - step, m_r_f = m_r, step= step/2, precision=precision - 1, DA=DA)
 
-print(grid_x)
-print(grid_y)
-print(Z)
 
+DA = False
+prob_limit = 0.5
+T_p_f = np.arange(3., 10., 1.)
+melt_rate = []
+
+#Build the data to graph
+for w_p in T_p_f:
+    melt_rate.append(point(p_limit=prob_limit, w_p=w_p, DA = DA))
+    print(w_p)
+
+print(melt_rate)
 fig,ax = plt.subplots()
-ax.set_xlabel("p warming rate")
-ax.set_ylabel("e warming rate")
-levels = np.arange(0., 1.1, .1)
-cs = ax.contourf(T_p_f, T_e_f, Z, levels)
-fig.colorbar(cs)
+ax.set_xlabel("pole warming rate (°C/100years)")
+ax.set_ylabel("melt rate(m/year)")
+cs = ax.scatter(T_p_f, melt_rate)
 
 # Save figure
 if DA == True:
-    if Melt == True:
-        fig.savefig(os.path.join(exp.fig_dir,
-                             'clima_forcing_var2_da.png'), format='png', dpi=500)
-    else:
-        fig.savefig(os.path.join(exp.fig_dir,
-                             'clima_forcing_var2_da_nomelt.png'), format='png', dpi=500)
-
+    fig.savefig(os.path.join(exp.fig_dir,
+                        'clima_forcing_var3_da.png'), format='png', dpi=500)
 else:
-    if Melt == True:
-        fig.savefig(os.path.join(exp.fig_dir,
-                             'clima_forcing_var2.png'), format='png', dpi=500)
-    else:
-        fig.savefig(os.path.join(exp.fig_dir,
-                                 'clima_forcing_var2_nomelt.png'), format='png', dpi=500)
+    fig.savefig(os.path.join(exp.fig_dir,
+                        'clima_forcing_var3.png'), format='png', dpi=500)
 
 
 
