@@ -6,7 +6,7 @@ import scienceplots
 rc('text', usetex=True)
 plt.style.use(['science']) # style used in scientific papers(LaTeX based)
 
-eta1 = 0.25
+eta1 = 3.0
 eta2 = 0.0 # starting value
 eta3 = 0.3
 
@@ -18,7 +18,7 @@ def T(q):
 def S(q, param):
     return param/(eta3+ np.abs(q))
 
-q  = np.linspace(-1.5,1.5,30000)
+q  = np.linspace(-3.0,3.0,30000)
 q =.5*q[1:]+.5*q[:-1]
 
 print('n.roots',' ','eta2')
