@@ -11,20 +11,19 @@ eta2 = 0.0 # starting value
 eta3 = 0.3
 
 #Function of transport that is equal to zero in equilibrium.
-f = lambda q: (q - eta1 / (1+np.abs(q)) + eta2 / (eta3+np.abs(q)))
-T = lambda q: (eta1/ (1 + np.abs(q)))
-S = lambda q: (eta2/ (eta3 + np.abs(q)))
+def f(q, param):
+    return q - eta1 / (1+np.abs(q)) + param / (eta3+np.abs(q))
+def T(q):
+    return eta1/(1+ np.abs(q))
+def S(q, param):
+    return param/(eta3+ np.abs(q))
 
-#Evaluate values on grid.
 q  = np.linspace(-1.5,1.5,30000)
-fq = f(q)
-
 q =.5*q[1:]+.5*q[:-1]
-fq=fq[1:]*fq[:-1]
-roots = [q1 for q1,f1 in zip(q,fq) if f1<0.]
 
-print('n.roots','\t','eta2')
+print('n.roots',' ','eta2')
 while eta2 <= 2.1:
+    fq = f(q[1:],eta2)*f(q[:-1],eta2)
     roots = [q1 for q1,f1 in zip(q,fq) if f1<0.]
     print(len(roots),'\t',eta2)
     eta2 += 0.01
