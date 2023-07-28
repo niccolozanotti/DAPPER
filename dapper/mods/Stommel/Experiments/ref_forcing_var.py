@@ -3,10 +3,16 @@
 import numpy as np
 import dapper.mods as modelling
 import dapper.mods.Stommel as stommel
+import dapper.mods.Stommel.Experiments as exp
 from dapper.da_methods.ensemble import EnKF
 import matplotlib.pyplot as plt
+from matplotlib import rc
 from copy import copy
 import os
+import scienceplots
+# from matplotlib.legend_handler import HandlerLine2D
+rc('text', usetex=True)
+plt.style.use(['science']) # style used in scientific papers(LaTeX based)
 
 # Number of ensemble members
 DA = True
@@ -69,8 +75,8 @@ def exp_ref_forcing(N=100, seed=1000, T_dev=2., S_dev=.2, DA=True):
 
 
 #Arrays for values of the final temperatures of pole and equator at the end of climate change
-T_dev_min, T_dev_max, T_dev_step = 30., 45., 5.
-S_dev_min, S_dev_max, S_dev_step = 5.,  20., 5.
+T_dev_min, T_dev_max, T_dev_step = 30., 50., 5.
+S_dev_min, S_dev_max, S_dev_step = 5.,  25., 5.
 T_dev = np.arange(T_dev_min, T_dev_max + T_dev_step, T_dev_step)
 S_dev = np.arange(S_dev_min, S_dev_max + S_dev_step, S_dev_step)
 grid_x,  grid_y = np.meshgrid(T_dev, S_dev)
@@ -94,24 +100,32 @@ for i in range(len(T_dev)):
 
 
 #We now want to graph points in a 3D graph
-print(Z)
-fig1, ax1 = plt.subplots(subplot_kw={"projection": "3d"})
-ax1.plot_surface(grid_x, grid_y, Z)
 
+#print(Z)
+#fig1, ax1 = plt.subplots(subplot_kw={"projection": "3d"})
+#ax1.plot_surface(grid_x, grid_y, Z)
+
+#if DA == True:
+#    fig1.savefig(os.path.join(stommel.fig_dir, 'ref_forcing_var_3D_DA.png'), format='png', dpi=500)
+#else:
+#    fig1.savefig(os.path.join(stommel.fig_dir,'ref_forcing_var_3D.png'),format='png',dpi=500)
+
+Da = ''
 if DA == True:
-    fig1.savefig(os.path.join(stommel.fig_dir, 'ref_forcing_var_3D_DA.png'), format='png', dpi=500)
-else:
-    fig1.savefig(os.path.join(stommel.fig_dir,'ref_forcing_var_3D.png'),format='png',dpi=500)
+    Da = '_da'
+
+
+nomefile = 'Data/ref_forcing_var' + Da
+
+np.savez(nomefile, grid_x, grid_y, Z)
 
 fig2, ax2 = plt.subplots()
 
 ax2.set_xlabel("T_dev")
 ax2.set_ylabel("S_dev")
+
 levels = np.arange(0., 1.1, .1)
-ax2.contourf(grid_x, grid_y, Z, levels)
+cs = ax2.contourf(grid_x, grid_y, Z, levels)
+fig2.colorbar(cs)
 
-if DA == True:
-    fig2.savefig(os.path.join(stommel.fig_dir,'ref_forcing_var_col_DA.png'),format='png',dpi=500)
-else:
-    fig2.savefig(os.path.join(stommel.fig_dir,'ref_forcing_var_col.png'),format='png',dpi=500)
-
+fig2.savefig(os.path.join(exp.fig_dir,'ref_forcing_var' + Da + '.png'), format='png',dpi=500)

@@ -15,8 +15,8 @@ from copy import copy
 import os
 import scienceplots
 # from matplotlib.legend_handler import HandlerLine2D
-rc('text', usetex=False)
-plt.style.use(['science','no-latex']) # style used in scientific papers(LaTeX based)
+rc('text', usetex=True)
+plt.style.use(['science']) # style used in scientific papers(LaTeX based)
 
 def exp_clima_forcing(N=100, seed=1000, T_p_f = 6.0, T_e_f= 3.0, DA = True, Melt = True):
     # Time period for DA
@@ -90,10 +90,10 @@ def exp_clima_forcing(N=100, seed=1000, T_p_f = 6.0, T_e_f= 3.0, DA = True, Melt
 
     return xp, HMM, model
 
-DA = False
+DA = True
 Melt = False
-T_p_f = np.arange(4., 9., 1.)
-T_e_f = np.arange(2., 4.5, .5)
+T_p_f = np.arange(0., 9., 1.)
+T_e_f = np.arange(0., 4.5, .5)
 grid_x, grid_y = np.meshgrid(T_p_f, T_e_f)
 Z = np.zeros_like(grid_x)
 
@@ -112,28 +112,22 @@ print(grid_y)
 print(Z)
 
 fig,ax = plt.subplots()
-ax.set_xlabel("p warming rate")
-ax.set_ylabel("e warming rate")
+ax.set_xlabel("pole warming rate (K/100 year)")
+ax.set_ylabel("equator warming rate (K/100 year)")
 levels = np.arange(0., 1.1, .1)
 cs = ax.contourf(T_p_f, T_e_f, Z, levels)
 fig.colorbar(cs)
 
-# Save figure
+# Save figuren and file
+Da = ''
+melt = ''
 if DA == True:
-    if Melt == True:
-        fig.savefig(os.path.join(exp.fig_dir,
-                             'clima_forcing_var2_da.png'), format='png', dpi=500)
-    else:
-        fig.savefig(os.path.join(exp.fig_dir,
-                             'clima_forcing_var2_da_nomelt.png'), format='png', dpi=500)
+    Da = '_da'
+if Melt == False:
+    melt = '_nomelt'
 
-else:
-    if Melt == True:
-        fig.savefig(os.path.join(exp.fig_dir,
-                             'clima_forcing_var2.png'), format='png', dpi=500)
-    else:
-        fig.savefig(os.path.join(exp.fig_dir,
-                                 'clima_forcing_var2_nomelt.png'), format='png', dpi=500)
-
-
+fig.savefig(os.path.join(exp.fig_dir,
+                         'clima_forcing_var2' + Da + melt + '.png'), format='png', dpi=500)
+nomefile = 'Data/clima_forcing_var2' + Da + melt
+np.savez(nomefile, grid_x, grid_y, Z)
 
