@@ -14,9 +14,6 @@ import scienceplots
 rc('text', usetex=True)
 plt.style.use(['science']) # style used in scientific papers(LaTeX based)
 
-# Number of ensemble members
-DA = True
-
 
 def exp_ref_forcing(N=100, seed=1000, T_dev=2., S_dev=.2, DA=True):
     # Timestepping. Timesteps of 1 day, running for 200 year.
@@ -75,8 +72,9 @@ def exp_ref_forcing(N=100, seed=1000, T_dev=2., S_dev=.2, DA=True):
 
 
 #Arrays for values of the final temperatures of pole and equator at the end of climate change
-T_dev_min, T_dev_max, T_dev_step = 30., 50., 5.
-S_dev_min, S_dev_max, S_dev_step = 5.,  25., 5.
+DA = True
+T_dev_min, T_dev_max, T_dev_step = 0.0, 0.6, 0.1
+S_dev_min, S_dev_max, S_dev_step = 0.,  6., 1.
 T_dev = np.arange(T_dev_min, T_dev_max + T_dev_step, T_dev_step)
 S_dev = np.arange(S_dev_min, S_dev_max + S_dev_step, S_dev_step)
 grid_x,  grid_y = np.meshgrid(T_dev, S_dev)
