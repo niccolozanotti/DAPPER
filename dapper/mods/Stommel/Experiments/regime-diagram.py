@@ -10,7 +10,8 @@ plt.style.use(['science']) # style used in scientific papers(LaTeX based)
 eta1 = 3.0 # starting value --> up to 5.0
 eta2 = 0.0 # starting value --> up to 2.0
 eta3 = 0.3
-
+step_eta1 = 0.01
+step_eta2 = 0.01
 #Function of transport that is equal to zero in equilibrium.
 def f(q, params):
     # params = [eta1,eta2]
@@ -19,40 +20,39 @@ def calc_L1(e1):
     return eta3*e1
 
 def calc_L2(e1,q):
-    curr_no_roots = 0 # we have either 1 or 3 roots in our ranges
-    max_no_roots = 0
-    e2 = calc_L1(e1)
+    e2 = calc_L1(e1) # starting from L1, there have to be multiple solutions
+    i = 0
     while e2 < 2.01:
         params = [e1,e2]
         fq = f(q[1:], params) * f(q[:-1], params)
         q_roots = [q1 for q1, f1 in zip(q, fq) if f1 < 0.]
-        curr_no_roots = len(q_roots)
-        if curr_no_roots > max_no_roots:
-            max_no_roots = curr_no_roots
-        elif curr_no_roots < max_no_roots:
-            return e2 - 0.005
-        e2 += 0.005
+        if len(q_roots) == 1 and i != 0:
+            if i ==1:
+                print('L1=L2')
+                return e2 - step_eta2
+            return e2 - step_eta2
+        e2 += step_eta2
+        i +=1
 
-q = np.linspace(-1.5,1.5,30000)
+q = np.linspace(-3.,3.,30000)
 q = .5*q[1:]+.5*q[:-1]
 
 # vector containing equilibrium flux values and T,S and values of parameters
 state = np.array([[0.0],[0.0],[0.0]]) # in order: L1, L2 eta1
 
-step_eta1 = 0.005
-step_eta2 = 0.005
+
 
 eta1 = 0.1
-while eta1 <= 1.0: # we know the val is < 1.0
-    print('For eta_1 = ', eta1, '\tL2 = ', calc_L2(eta1, q),'\tL1 = ',calc_L1(eta1))
+while eta1 <= 5.0:  # we know the val is < 1.0
+    L1 = calc_L1(eta1)
+    L2 = calc_L2(eta1,q)
+    state = np.append(state, [[L1], [L2], [eta1]],axis=1)
+    print('eta1 =',eta1,'\tL1=',L1,'\tL2',L2)
     eta1 += step_eta1
 
-# while eta1 <= 5.0: # start from 0
-#     L2 = calc_L2(e1=eta1,q=q)
-#     L1 = calc_L1(e1=eta1)
-#     state = np.append(state, [[L1], [L2], [eta1]],axis=1)
-#     eta1 += 0.005
-
+plt.scatter(state[2,1:],state[1,1:]) # L2
+plt.scatter(state[2,1:],state[0,1:]) # L1
+plt.show()
 # Plotting
 # fig, axs = plt.subplots(figsize=(8,5))
 #
