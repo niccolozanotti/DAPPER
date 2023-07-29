@@ -90,7 +90,7 @@ def exp_clima_forcing(N=100, seed=1000, T_p_f = 6.0, T_e_f= 3.0, DA = True, T_me
 
     return xp, HMM, model
 
-def point(p_limit = 0.4, w_p = 6.0, T_m0 = 40.*stommel.year, T_mf = 440.*stommel.year,  step = 80.*stommel.year, precision = 5, DA = True):
+def point(p_limit = 0.4, w_p = 6.0, T_m0 = 20.*stommel.year, T_mf = 140.*stommel.year,  step = 30.*stommel.year, precision = 5, DA = True):
     if precision <= 0:
         return T_mf
 
@@ -115,7 +115,7 @@ def point(p_limit = 0.4, w_p = 6.0, T_m0 = 40.*stommel.year, T_mf = 440.*stommel
 
 
 DA = True
-prob_limit = 0.1
+prob_limit = 0.9
 T_p_f = np.arange(4., 8.5, .5)
 W_p = []
 melt_time = []
@@ -140,7 +140,7 @@ print(melt_time)
 fig,ax = plt.subplots()
 ax.set_xlabel("pole warming rate (K/100years)")
 ax.set_ylabel("Melt Time(year)")
-cs = ax.scatter(W_p, melt_time, marker = ".")
+ax.scatter(W_p, melt_time, marker = ".")
 
 # Save figure and fiòe
 fig.savefig(os.path.join(exp.fig_dir,
